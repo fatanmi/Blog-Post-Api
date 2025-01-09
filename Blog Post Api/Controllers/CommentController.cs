@@ -20,27 +20,6 @@ namespace Blog_Post_Api.Controllers
             _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
-        [HttpGet("{Id:int}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> Get(int Id)
-        {
-            try
-            {
-
-                var userComment = await _unitOfWork.Comments.GetAsync(q => q.Id == Id);
-                if (userComment != null)
-                {
-                    return Ok(userComment);
-                }
-                return Ok(userComment);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error occurred retriving post at {nameof(Get)} ");
-                return BadRequest(ex);
-            }
-        }
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -62,7 +41,29 @@ namespace Blog_Post_Api.Controllers
                 return BadRequest(ex);
             }
         }
-        [HttpPut]
+
+        [HttpGet("{PostId:int}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> Get(int PostId)
+        {
+            try
+            {
+
+                IEnumerable<Comment> userComment = await _unitOfWork.Comments.GetAllAsync(q => q.PostId == PostId);
+                if (userComment != null)
+                {
+                    return Ok(userComment);
+                }
+                return Ok(userComment);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error occurred retriving post at {nameof(Get)} ");
+                return BadRequest(ex);
+            }
+        }
+        [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> CreateComment([FromBody] CreateCommentDTO userComment)
@@ -84,5 +85,60 @@ namespace Blog_Post_Api.Controllers
                 return BadRequest(ex);
             }
         }
+        [HttpPut("{Id:int}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> UpdatePost([FromBody] UpdateCommentDTO UpdateComment, int Id)
+        {
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            try
+            {
+                Comment ExistingPost = await _unitOfWork.Comments.GetAsync(q => q.Id == Id);
+                if (ExistingPost != null)
+                {
+                    _mapper.Map(UpdateComment, ExistingPost);
+                    _unitOfWork.Comments.UpdateAsync(ExistingPost);
+                    await _unitOfWork.Save();
+
+                    return Ok(UpdateComment);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error occurred retriving post at {nameof(UpdateComment)} ");
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+            return Ok();
+        }
+        [HttpDelete("{Id:int}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> DeleteComment(int Id)
+        {
+            try
+            {
+                Comment ExistingPost = await _unitOfWork.Comments.GetAsync(q => q.Id == Id);
+                if (ExistingPost != null)
+                {
+                    await _unitOfWork.Comments.DeleteAsync(Id);
+                    await _unitOfWork.Save();
+
+                    return StatusCode(200, "Comment Deleted!");
+                }
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error occurred retriving post at {nameof(DeleteComment)} ");
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+            return Ok();
+        }
+
     }
 }

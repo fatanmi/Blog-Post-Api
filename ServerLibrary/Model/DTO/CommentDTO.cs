@@ -13,11 +13,11 @@ namespace ServerLibrary.Model.DTO
     {
         public string Content { get; set; }
         public string Author { get; set; }
-        public DateTime CreatedDate { get; set; } = DateTime.Now;
+        public DateTime CreatedDate { get; } = DateTime.Now;
     }
     public class UpdateCommentDTO : CreateCommentDTO
     {
-        public DateTime? UpdatedDate { get; set; } = DateTime.Now;
+        public DateTime? UpdatedDate { get; } = DateTime.Now;
     }
 
 }

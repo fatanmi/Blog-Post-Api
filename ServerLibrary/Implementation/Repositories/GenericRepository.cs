@@ -14,11 +14,17 @@ namespace ServerLibrary.Implementation.Repositories
             _dbContext = _Context;
             _db = _dbContext.Set<T>();
         }
-        public async void DeleteAsync(int id)
+        public async Task DeleteAsync(int id)
         {
+
             T Entity = await _db.FirstOrDefaultAsync(e => EF.Property<int>(e, "Id") == id);
 
-            if (Entity is not null) { _db.Remove(Entity); }
+            if (Entity is not null)
+            {
+                _db.Remove(Entity);
+                await _dbContext.SaveChangesAsync();
+            }
+
         }
 
         public async Task<T> GetAsync(Expression<Func<T, bool>> expression = null, List<string> includes = null)

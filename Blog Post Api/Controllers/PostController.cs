@@ -25,6 +25,28 @@ namespace Blog_Post_Api.Controllers
             _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
+        [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetAllAsync()
+        {
+            try
+            {
+
+                IEnumerable<Post> userPost = await _unitOfWork.Posts.GetAllAsync(includes: new List<string> { "Comments" });
+                if (userPost != null)
+                {
+                    return Ok(userPost);
+                }
+                return Ok(userPost);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error occurred retriving post at {nameof(GetAllAsync)} ");
+                return BadRequest(ex);
+            }
+        }
+
         [HttpGet("{Id:int}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -46,28 +68,7 @@ namespace Blog_Post_Api.Controllers
                 return BadRequest(ex);
             }
         }
-        [HttpGet]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetAllAsync()
-        {
-            try
-            {
-
-                IEnumerable<Post> userPost = await _unitOfWork.Posts.GetAllAsync();
-                if (userPost != null)
-                {
-                    return Ok(userPost);
-                }
-                return Ok(userPost);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error occurred retriving post at {nameof(GetAllAsync)} ");
-                return BadRequest(ex);
-            }
-        }
-        [HttpPut]
+        [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> CreatePost([FromBody] CreatePostDTO userPost)
@@ -85,9 +86,65 @@ namespace Blog_Post_Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error occurred retriving post at {nameof(GetAllAsync)} ");
+                _logger.LogError(ex, $"Error occurred retriving post at {nameof(CreatePost)} ");
                 return BadRequest(ex);
             }
+        }
+        [HttpPut("{Id:int}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> UpdatePost([FromBody] UpdatePostDTO UpdatePost, int Id)
+        {
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            try
+            {
+                Post ExistingPost = await _unitOfWork.Posts.GetAsync(q => q.Id == Id);
+                if (ExistingPost != null)
+                {
+                    _mapper.Map(UpdatePost, ExistingPost);
+                    _unitOfWork.Posts.UpdateAsync(ExistingPost);
+                    await _unitOfWork.Save();
+
+                    return Ok(UpdatePost);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error occurred retriving post at {nameof(UpdatePost)} ");
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+            return Ok();
+        }
+        [HttpDelete("{Id:int}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> DeletePost(int Id)
+        {
+
+
+            try
+            {
+                Post ExistingPost = await _unitOfWork.Posts.GetAsync(q => q.Id == Id);
+                if (ExistingPost != null)
+                {
+                    await _unitOfWork.Posts.DeleteAsync(Id);
+                    await _unitOfWork.Save();
+
+                    return StatusCode(200, "Post Deleted!");
+                }
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error occurred retriving post at {nameof(DeletePost)} ");
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+            return Ok();
         }
     }
 }
