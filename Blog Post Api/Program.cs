@@ -1,3 +1,4 @@
+using Blog_Post_Api.ServiceExtentions;
 using Microsoft.EntityFrameworkCore;
 using ServerLibrary.Data;
 using ServerLibrary.Implementation.Contract;
@@ -12,6 +13,9 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<AppDBContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("sqlConnection")));
+
+builder.Services.AddAuthentication();
+builder.Services.ConfigureIdentity();
 
 builder.Services.AddAutoMapper(typeof(MapperInitializer));
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();

@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Blog_Post_Api.Authentication;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using ServerLibrary.Model.Entities;
 using System;
 using System.Collections.Generic;
@@ -8,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace ServerLibrary.Data
 {
-    public class AppDBContext : DbContext
+    public class AppDBContext : IdentityDbContext<ApiUser>
     {
         public AppDBContext(DbContextOptions<AppDBContext> option) : base(option) { }
 
@@ -16,6 +18,7 @@ namespace ServerLibrary.Data
         public DbSet<Comment> Comments { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.ApplyConfiguration(new RoleConfiguration());
             // Explicitly define the one-to-many relationship between Post and Comment
             modelBuilder.Entity<Post>()
                 .HasMany(p => p.Comments)           // Post has many Comments

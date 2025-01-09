@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Blog_Post_Api.Authentication;
 using ServerLibrary.Model.DTO;
 using ServerLibrary.Model.Entities;
 using System;
@@ -19,6 +20,7 @@ namespace ServerLibrary.Data
             CreateMap<Comment, CommentDTO>().ReverseMap();
             CreateMap<Comment, CreateCommentDTO>().ReverseMap();
             CreateMap<Comment, UpdateCommentDTO>().ReverseMap();
+            CreateMap<ApiUser, UserDTO>().ReverseMap();
 
         }
     }
