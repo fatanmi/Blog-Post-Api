@@ -1,7 +1,7 @@
 ﻿
 namespace ServerLibrary.Model.DTO
 {
-    public class CommentDTO : CreateComment
+    public class CommentDTO : CreateCommentDTO
     {
         public int Id { get; set; }
 
@@ -9,14 +9,13 @@ namespace ServerLibrary.Model.DTO
 
     }
 
-    public class CreateComment
+    public class CreateCommentDTO
     {
         public string Content { get; set; }
         public string Author { get; set; }
         public DateTime CreatedDate { get; set; } = DateTime.Now;
-        //public List<Comment> Comments { get; set; }
     }
-    public class UpdateComment : CreateComment
+    public class UpdateCommentDTO : CreateCommentDTO
     {
         public DateTime? UpdatedDate { get; set; } = DateTime.Now;
     }

@@ -15,7 +15,7 @@ namespace ServerLibrary.Model.Entities
         public string Title { get; set; }
         public string Author { get; set; }
         public string Content { get; set; }
-        public List<Comment> Comments { get; set; } = [];
+        public List<Comment> Comments { get; set; } = new List<Comment>();
 
     }
 }

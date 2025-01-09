@@ -1,4 +1,5 @@
-﻿using ServerLibrary.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using ServerLibrary.Data;
 using ServerLibrary.Implementation.Contract;
 using ServerLibrary.Model.Entities;
 
@@ -7,8 +8,13 @@ namespace ServerLibrary.Implementation.Repositories
     public class UnitOfWork : IUnitOfWork
     {
         private readonly AppDBContext _Context;
-        private IGenericRepository<Post> _Posts;
-        private IGenericRepository<Comment> _Comments;
+        private readonly IGenericRepository<Post> _Posts;
+        private readonly IGenericRepository<Comment> _Comments;
+
+        public UnitOfWork(AppDBContext context)
+        {
+            _Context = context;
+        }
         public IGenericRepository<Post> Posts => _Posts ?? new GenericRepository<Post>(_Context);
 
         public IGenericRepository<Comment> Comments => _Comments ?? new GenericRepository<Comment>(_Context);

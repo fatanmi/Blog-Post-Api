@@ -9,9 +9,9 @@ namespace ServerLibrary.Implementation.Repositories
         private readonly AppDBContext _dbContext;
         private readonly DbSet<T> _db;
 
-        public GenericRepository(AppDBContext appDBContext)
+        public GenericRepository(AppDBContext _Context)
         {
-            _dbContext = appDBContext;
+            _dbContext = _Context;
             _db = _dbContext.Set<T>();
         }
         public async void DeleteAsync(int id)
@@ -32,7 +32,11 @@ namespace ServerLibrary.Implementation.Repositories
                     query = query.Include(include);
                 }
             }
-            return await query.AsNoTracking().FirstOrDefaultAsync(expression);
+            if (expression != null)
+            {
+                return await query.AsNoTracking().FirstOrDefaultAsync(expression);
+            }
+            return await query.AsNoTracking().FirstOrDefaultAsync();
         }
 
         public async Task<IEnumerable<T>> GetAllAsync(Expression<Func<T, bool>> expression = null, Func<IQueryable<T>, IOrderedQueryable<T>> orderby = null, List<string> includes = null)
@@ -51,6 +55,11 @@ namespace ServerLibrary.Implementation.Repositories
                     query = query.Include(include);
                 }
             }
+            if (orderby != null)
+            {
+                query = orderby(query);
+            }
+
             return await query.AsNoTracking().ToListAsync();
         }
 

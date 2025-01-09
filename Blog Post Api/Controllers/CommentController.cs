@@ -1,25 +1,20 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
 using ServerLibrary.Implementation.Contract;
 using ServerLibrary.Model.Entities;
-using System.Threading.Tasks;
-using System;
 using ServerLibrary.Model.DTO;
 
 namespace Blog_Post_Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class PostController : ControllerBase
+    public class CommentController : ControllerBase
     {
-        //private readonly AppContext _dbContext;
         private readonly IUnitOfWork _unitOfWork;
-        private readonly ILogger<PostController> _logger;
+        private readonly ILogger<CommentController> _logger;
 
         private readonly IMapper _mapper;
-        public PostController(ILogger<PostController> logger, IUnitOfWork unitOfWork, IMapper mapper)
+        public CommentController(ILogger<CommentController> logger, IUnitOfWork unitOfWork, IMapper mapper)
         {
             _logger = logger;
             _unitOfWork = unitOfWork;
@@ -33,12 +28,12 @@ namespace Blog_Post_Api.Controllers
             try
             {
 
-                var userPost = await _unitOfWork.Posts.GetAsync(q => q.Id == Id, includes: new List<string> { "Comments" });
-                if (userPost != null)
+                var userComment = await _unitOfWork.Comments.GetAsync(q => q.Id == Id);
+                if (userComment != null)
                 {
-                    return Ok(userPost);
+                    return Ok(userComment);
                 }
-                return Ok(userPost);
+                return Ok(userComment);
             }
             catch (Exception ex)
             {
@@ -54,12 +49,12 @@ namespace Blog_Post_Api.Controllers
             try
             {
 
-                IEnumerable<Post> userPost = await _unitOfWork.Posts.GetAllAsync();
-                if (userPost != null)
+                IEnumerable<Comment> userComment = await _unitOfWork.Comments.GetAllAsync();
+                if (userComment != null)
                 {
-                    return Ok(userPost);
+                    return Ok(userComment);
                 }
-                return Ok(userPost);
+                return Ok(userComment);
             }
             catch (Exception ex)
             {
@@ -70,7 +65,7 @@ namespace Blog_Post_Api.Controllers
         [HttpPut]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> CreatePost([FromBody] CreatePostDTO userPost)
+        public async Task<IActionResult> CreateComment([FromBody] CreateCommentDTO userComment)
         {
             if (!ModelState.IsValid)
             {
@@ -78,10 +73,10 @@ namespace Blog_Post_Api.Controllers
             }
             try
             {
-                Post post = _mapper.Map<Post>(userPost);
+                Comment comment = _mapper.Map<Comment>(userComment);
 
-                await _unitOfWork.Posts.Insert(post);
-                return Ok(userPost);
+                await _unitOfWork.Comments.Insert(comment);
+                return Ok(userComment);
             }
             catch (Exception ex)
             {

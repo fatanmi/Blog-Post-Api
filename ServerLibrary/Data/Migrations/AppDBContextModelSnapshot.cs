@@ -39,7 +39,13 @@ namespace ServerLibrary.Data.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("PostId")
+                    b.Property<int>("PostId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("PostId1")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PostId2")
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("UpdatedDate")
@@ -48,6 +54,8 @@ namespace ServerLibrary.Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("PostId");
+
+                    b.HasIndex("PostId1");
 
                     b.ToTable("Comments");
                 });
@@ -84,7 +92,15 @@ namespace ServerLibrary.Data.Migrations
                 {
                     b.HasOne("ServerLibrary.Model.Entities.Post", null)
                         .WithMany("Comments")
-                        .HasForeignKey("PostId");
+                        .HasForeignKey("PostId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ServerLibrary.Model.Entities.Post", "Post")
+                        .WithMany()
+                        .HasForeignKey("PostId1");
+
+                    b.Navigation("Post");
                 });
 
             modelBuilder.Entity("ServerLibrary.Model.Entities.Post", b =>
