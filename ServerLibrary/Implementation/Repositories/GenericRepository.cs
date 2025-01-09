@@ -61,5 +61,16 @@ namespace ServerLibrary.Implementation.Repositories
             _db.Attach(Entity);
             _dbContext.Entry(Entity).State = EntityState.Modified;
         }
+
+        public async Task<T> Insert(T Entity)
+        {
+            var result = await _db.AddAsync(Entity);
+
+            await _dbContext.SaveChangesAsync();
+
+            return result.Entity;
+
+        }
+
     }
 }

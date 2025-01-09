@@ -13,5 +13,6 @@ namespace ServerLibrary.Implementation.Contract
         Task<IEnumerable<T>> GetAllAsync(Expression<Func<T, bool>> expression = null, Func<IQueryable<T>, IOrderedQueryable<T>> orderby = null, List<string> includes = null);
         void DeleteAsync(int id);
         void UpdateAsync(T entity);
+        Task<T> Insert(T entity);
     }
 }
