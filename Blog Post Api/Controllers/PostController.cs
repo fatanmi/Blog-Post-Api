@@ -1,11 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
 using ServerLibrary.Implementation.Contract;
 using ServerLibrary.Model.Entities;
-using System.Threading.Tasks;
-using System;
 using ServerLibrary.Model.DTO;
 
 namespace Blog_Post_Api.Controllers
