@@ -2,11 +2,6 @@
 using Blog_Post_Api.Authentication;
 using ServerLibrary.Model.DTO;
 using ServerLibrary.Model.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ServerLibrary.Data
 {
@@ -21,6 +16,8 @@ namespace ServerLibrary.Data
             CreateMap<Comment, CreateCommentDTO>().ReverseMap();
             CreateMap<Comment, UpdateCommentDTO>().ReverseMap();
             CreateMap<ApiUser, UserDTO>().ReverseMap();
+            CreateMap<ApiUser, LoginUserDTO>().ReverseMap();
+            CreateMap<ApiUser, CreateUserDTO>().ReverseMap();
 
         }
     }

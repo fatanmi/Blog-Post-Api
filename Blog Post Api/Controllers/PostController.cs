@@ -3,10 +3,23 @@ using Microsoft.AspNetCore.Mvc;
 using ServerLibrary.Implementation.Contract;
 using ServerLibrary.Model.Entities;
 using ServerLibrary.Model.DTO;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Blog_Post_Api.Controllers
 {
+    /// <summary>
+    /// Endpoint for starting a post.
+    /// </summary>
+    /// /// <remarks>
+    /// This endpoint creates a new post in the system.
+    /// </remarks>
+    /// <response code="201">Post created successfully.</response>
+    /// <response code="400">Validation failed.</response>
     [Route("api/[controller]")]
+    [Authorize]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ApiController]
     public class PostController : ControllerBase
     {
@@ -21,9 +34,9 @@ namespace Blog_Post_Api.Controllers
             _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
+
         [HttpGet]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+
         public async Task<IActionResult> GetAllAsync()
         {
             try
@@ -65,8 +78,6 @@ namespace Blog_Post_Api.Controllers
             }
         }
         [HttpPost]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> CreatePost([FromBody] CreatePostDTO userPost)
         {
             if (!ModelState.IsValid)
@@ -87,8 +98,6 @@ namespace Blog_Post_Api.Controllers
             }
         }
         [HttpPut("{Id:int}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> UpdatePost([FromBody] UpdatePostDTO UpdatePost, int Id)
         {
 
