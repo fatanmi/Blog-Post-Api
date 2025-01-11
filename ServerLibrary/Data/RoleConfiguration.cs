@@ -1,11 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using ServerLibrary.Constant;
 
 namespace ServerLibrary.Data
 {
@@ -13,18 +9,15 @@ namespace ServerLibrary.Data
     {
         public void Configure(EntityTypeBuilder<IdentityRole> builder)
         {
-            builder.HasData(new IdentityRole
+            foreach (var Item in Constant.Constant.RoleName)
             {
-                Name = "User",
-                NormalizedName = "USER"
-            },
-             new IdentityRole
-             {
-                 Name = "Administrator",
-                 NormalizedName = "ADMINISTRATOR"
+                builder.HasData(new IdentityRole
+                {
+                    Name = Item.Value.Name,
+                    NormalizedName = Item.Value.NormalizedName
+                });
+            }
 
-
-             });
         }
     }
 }

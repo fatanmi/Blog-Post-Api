@@ -50,6 +50,8 @@ if (app.Environment.IsDevelopment())
 }
 app.UseCors("CorsPolicy");
 
+app.ConfigureErrorHandler();
+
 app.UseHttpsRedirection();
 
 app.UseAuthentication();

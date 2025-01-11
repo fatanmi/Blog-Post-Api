@@ -1,6 +1,5 @@
 ﻿using Blog_Post_Api.Authentication;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using ServerLibrary.Implementation.Contract;

@@ -2,6 +2,10 @@
 using ServerLibrary.Data;
 using ServerLibrary.Implementation.Contract;
 using System.Linq.Expressions;
+using X.PagedList;
+using X.PagedList.Extensions;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+
 namespace ServerLibrary.Implementation.Repositories
 {
     public class GenericRepository<T> : IGenericRepository<T> where T : class
@@ -29,47 +33,56 @@ namespace ServerLibrary.Implementation.Repositories
 
         public async Task<T> GetAsync(Expression<Func<T, bool>> expression = null, List<string> includes = null)
         {
-            IQueryable<T> query = _db;
+            IQueryable<T> Query = _db;
 
             if (includes != null)
             {
                 foreach (var include in includes)
                 {
-                    query = query.Include(include);
+                    Query = Query.Include(include);
                 }
             }
             if (expression != null)
             {
-                return await query.AsNoTracking().FirstOrDefaultAsync(expression);
+                return await Query.AsNoTracking().FirstOrDefaultAsync(expression);
             }
-            return await query.AsNoTracking().FirstOrDefaultAsync();
+            return await Query.AsNoTracking().FirstOrDefaultAsync();
         }
 
-        public async Task<IEnumerable<T>> GetAllAsync(Expression<Func<T, bool>> expression = null, Func<IQueryable<T>, IOrderedQueryable<T>> orderby = null, List<string> includes = null)
+        public async Task<IPagedList<T>> GetAllAsync(RequestParams requestParams = null, Expression<Func<T, bool>> expression = null, Func<IQueryable<T>, IOrderedQueryable<T>> orderby = null, List<string> includes = null)
         {
-            IQueryable<T> query = _db;
+            IQueryable<T> Query = _db;
 
             if (expression != null)
             {
-                query = query.Where(expression);
+                Query = Query.Where(expression);
             }
 
             if (includes != null)
             {
                 foreach (var include in includes)
                 {
-                    query = query.Include(include);
+                    Query = Query.Include(include);
                 }
             }
             if (orderby != null)
             {
-                query = orderby(query);
+                Query = orderby(Query);
             }
 
-            return await query.AsNoTracking().ToListAsync();
+            int TotalCount = await Query.CountAsync();
+            int PageNumber = requestParams?.PageNumber ?? 1;
+            int PageSize = requestParams?.PageSize ?? requestParams.MaxPageSize;
+            PageSize = PageSize > 0 ? PageSize : requestParams.MaxPageSize;
+
+            List<T> Items = await Query.Skip((PageNumber - 1) * PageSize)
+                                   .Take(PageSize)
+                                   .AsNoTracking()
+                                   .ToListAsync();
+            return new StaticPagedList<T>(Items, PageNumber, PageSize, TotalCount);
+
+
         }
-
-
 
         public void UpdateAsync(T Entity)
         {
@@ -86,6 +99,7 @@ namespace ServerLibrary.Implementation.Repositories
             return result.Entity;
 
         }
+
 
     }
 }

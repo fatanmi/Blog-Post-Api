@@ -26,26 +26,6 @@ namespace Blog_Post_Api.Controllers
             _AuthManager = AuthManager;
         }
 
-        [HttpGet]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetUsers()
-        {
-
-            try
-            {
-                List<ApiUser> UsersList = await _UserManager.Users.ToListAsync();
-                var userDtos = _Mapper.Map<List<UserDTO>>(UsersList);
-
-                return Ok(userDtos); ;
-
-            }
-            catch (Exception ex)
-            {
-                _Logger.LogError(ex, $"Error occurred at {nameof(GetUsers)}");
-                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while processing your request.");
-            }
-        }
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
